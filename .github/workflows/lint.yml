@@ -28,7 +28,6 @@ jobs:
       # Runs a single command using the runners shell
       - name: ruff-action
         uses: astral-sh/ruff-action@v4.1.0
-        with:
-          args: ruff check
+        run: ruff check
       - name: ruff-format
         run: ruff format
