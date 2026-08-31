@@ -1,0 +1,192 @@
+openapi: 3.2.0
+title: Memberships API Spec
+summary: API specification for managing TEMPO memberships
+version: 1.0.0
+
+paths:
+  /memberships:
+    get:
+      summary: Get all memberships
+      operationId: getMemberships
+      parameters:
+        - name: name
+          in: query
+          description: Filter memberships by name
+          required: false
+          schema:
+            type: string
+        - name: schoolYear
+          in: query
+          description: Filter memberships by school year (e.g., 2627)
+          required: false
+          schema:
+            type: string
+        - name: limit
+          in: query
+          description: Maximum number of memberships to return
+          required: false
+          schema:
+            type: integer
+            default: 20
+        - name: offset
+          in: query
+          description: Number of memberships to skip before starting to collect the result set
+          required: false
+          schema:
+            type: integer
+            default: 0
+      responses:
+        '200':
+          description: A list of memberships
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Membership'
+        '400':
+          description: Invalid query parameters
+        '401':
+          description: Unauthorized access
+        '500':
+          description: Internal server error
+
+    post:
+      summary: Create a new membership
+      operationId: createMembership
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Membership'
+      responses:
+        '201':
+          description: Membership created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Membership'
+        '401':
+          description: Unauthorized access
+        '500':
+          description: Internal server error
+
+  /memberships/{membershipId}:
+    get:
+      summary: Get a specific membership by ID
+      operationId: getMembershipById
+      parameters:
+        - name: membershipId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Membership details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Membership'
+        '400':
+          description: Invalid membership ID, or requested membership has expired
+        '401':
+          description: Unauthorized access
+        '404':
+          description: Membership not found
+        '500':
+          description: Internal server error
+    patch:
+      summary: Update a specific membership by ID
+      operationId: updateMembershipById
+      parameters:
+        - name: membershipId
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/Membership'
+      responses:
+        '200':
+          description: Membership updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Membership'
+        '400':
+          description: Invalid membership ID, or requested membership has expired
+        '401':
+          description: Unauthorized access
+        '404':
+          description: Membership not found
+        '500':
+          description: Internal server error
+    delete:
+      summary: Delete a specific membership by ID
+      operationId: deleteMembershipById
+      parameters:
+        - name: membershipId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Membership deleted successfully
+        '401':
+          description: Unauthorized access
+        '500':
+          description: Internal server error
+
+components:
+  schemas:
+    Membership:
+      type: object
+      properties:
+        id:
+          type: string
+          description: Unique identifier for the membership. Formatted as "student_id:school_year", for example, "1009562340:2627".
+        name:
+          type: string
+        type:
+          $ref: '#/components/schemas/MembershipType'
+        skillLevel:
+          $ref: '#/components/schemas/SkillLevel'
+        membershipEndDate:
+          type: string
+          format: date
+          description: End date of the membership
+        createdAt:
+          type: string
+          format: date-time
+          description: Timestamp when the membership was created
+        updatedAt:
+          type: string
+          format: date-time
+          description: Timestamp when the membership was last updated
+      required:
+        - id
+        - name
+        - type
+        - membershipEndDate
+    MembershipType:
+      type: string
+      oneof:
+        - fall
+        - winter
+        - full
+      description: Type of the member
+    SkillLevel:
+      type: string
+      oneof:
+        - white
+        - red
+        - purple
+        - blue
+      description: Skill level of the member
