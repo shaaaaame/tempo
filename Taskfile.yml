@@ -6,7 +6,18 @@ vars:
   GREETING: Hello, world!
 
 tasks:
+  venv:
+    desc: Create a virtual environment
+    status:
+      - test -d .venv
+    cmds:
+      - py -3.14.17
+      - py -m venv .venv
   requirements:
     desc: Write requirements.txt file
     cmds:
       - py -m pip freeze > requirements.txt
+  lint:
+    desc: Lint the code
+    cmds:
+      - ruff check
