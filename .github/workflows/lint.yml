@@ -27,4 +27,4 @@ jobs:
 
       # Runs a single command using the runners shell
       - name: ruff-action
-      - uses: astral-sh/ruff-action@v4.1.0
+        uses: astral-sh/ruff-action@v4.1.0
