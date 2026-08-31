@@ -28,6 +28,3 @@ jobs:
       # Runs a single command using the runners shell
       - name: ruff-action
         uses: astral-sh/ruff-action@v4.1.0
-        run: ruff check
-      - name: ruff-format
-        run: ruff format
