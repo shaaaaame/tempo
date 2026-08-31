@@ -1,0 +1,2 @@
+[tool.ruff.lint]
+select = ["E", "F", "N"]  # Adds PEP 8 naming to default rules
