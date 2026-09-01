@@ -1,5 +1,4 @@
 from fastapi import APIRouter
-from internal.repository.models import Memberships
 from internal.repository.mysql import SessionDep, list_memberships
 
 membership_router = APIRouter()
