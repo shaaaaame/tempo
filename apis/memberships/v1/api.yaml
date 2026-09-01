@@ -72,12 +72,12 @@ paths:
         '500':
           description: Internal server error
 
-  /memberships/{membershipId}:
+  /memberships/{membership_id}:
     get:
       summary: Get a specific membership by ID
       operationId: getMembershipById
       parameters:
-        - name: membershipId
+        - name: membership_id
           in: path
           required: true
           schema:
@@ -101,7 +101,7 @@ paths:
       summary: Update a specific membership by ID
       operationId: updateMembershipById
       parameters:
-        - name: membershipId
+        - name: membership_id
           in: path
           required: true
           schema:
@@ -152,27 +152,34 @@ components:
         id:
           type: string
           description: Unique identifier for the membership. Formatted as "student_id:school_year", for example, "1009562340:2627".
-        name:
+        first_name:
           type: string
+        last_name:
+          type: string
+        email:
+          type: string
+          format: email
         type:
           $ref: '#/components/schemas/MembershipType'
-        skillLevel:
+        skill_level:
           $ref: '#/components/schemas/SkillLevel'
-        membershipEndDate:
+        end_date:
           type: string
           format: date
           description: End date of the membership
-        createdAt:
+        created_at:
           type: string
           format: date-time
           description: Timestamp when the membership was created
-        updatedAt:
+        updated_at:
           type: string
           format: date-time
           description: Timestamp when the membership was last updated
       required:
         - id
-        - name
+        - first_name
+        - last_name
+        - email
         - type
         - membershipEndDate
     MembershipType:
