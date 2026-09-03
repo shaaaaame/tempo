@@ -89,12 +89,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Membership'
-        '400':
-          description: Invalid membership ID, or requested membership has expired
         '401':
           description: Unauthorized access
         '404':
           description: Membership not found
+        '422':
+          description: Invalid membership ID, or requested membership has expired
         '500':
           description: Internal server error
     patch:
@@ -119,12 +119,13 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/Membership'
-        '400':
-          description: Invalid membership ID, or requested membership has expired
+
         '401':
           description: Unauthorized access
         '404':
           description: Membership not found
+        '422':
+          description: Invalid membership ID, or requested membership has expired
         '500':
           description: Internal server error
     delete:
