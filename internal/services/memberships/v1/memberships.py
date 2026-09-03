@@ -12,7 +12,7 @@ from internal.services.memberships.v1.schemas import (
 )
 from internal.repository.errors import ErrNotFound
 
-membership_router = APIRouter()
+membership_router = APIRouter(prefix="/v1")
 
 
 @membership_router.get("/memberships", tags=["memberships"])

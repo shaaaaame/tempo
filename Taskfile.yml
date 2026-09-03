@@ -22,3 +22,7 @@ tasks:
     desc: Run the development server
     cmds:
       - uv run fastapi dev
+  test:
+    desc: Run tests
+    cmds:
+      - uv run pytest
