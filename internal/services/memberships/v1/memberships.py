@@ -60,7 +60,7 @@ async def update_membership(
         raise HTTPException(
             status.HTTP_404_NOT_FOUND, f"member with id: {membership_id} not found."
         )
-    except:
+    except Exception as _:
         raise HTTPException(
             status.HTTP_500_INTERNAL_SERVER_ERROR, "an unknown error has occurred."
         )

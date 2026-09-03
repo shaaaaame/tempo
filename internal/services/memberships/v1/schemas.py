@@ -22,7 +22,7 @@ class CreateMembershipRequest(BaseModel):
         valid_id = validate_membership_id(self.id)
         if not valid_id:
             raise ValueError(
-                "Invalid membership id format. Format should be {10-digit student number}:{school year, e.g 2627} "
+                "Invalid membership id format. Format should be {10-digit student number}:{school year, e.g 2627}"  # noqa
             )
 
         if self.skill_level not in SKILL_LEVELS:
@@ -52,7 +52,7 @@ class UpdateMembershipRequest(BaseModel):
         valid_id = validate_membership_id(self.id)
         if not valid_id:
             raise ValueError(
-                "Invalid membership id format. Format should be {10-digit student number}:{school year, e.g 2627} "
+                "Invalid membership id format. Format should be {10-digit student number}:{school year, e.g 2627}"  # noqa
             )
 
         if self.skill_level not in SKILL_LEVELS:
