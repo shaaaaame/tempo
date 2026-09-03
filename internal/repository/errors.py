@@ -1,0 +1,1 @@
+ErrNotFound = Exception("Not found")

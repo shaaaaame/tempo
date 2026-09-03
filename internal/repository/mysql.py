@@ -3,6 +3,7 @@ from sqlmodel import create_engine, Session, select
 from typing import Annotated
 from fastapi import Depends
 from internal.repository.models import Memberships
+from internal.repository.errors import ErrNotFound
 
 DB_PASSWORD = dotenv.get_key(".env", "DB_PASSWORD")
 CA_CERT_PATH = dotenv.get_key(".env", "CA_CERT_PATH")
@@ -21,10 +22,48 @@ def get_session():
 SessionDep = Annotated[Session, Depends(get_session)]
 
 
-def list_memberships(
+def db_get_memberships(
     session: SessionDep,
     offset: int = 0,
     limit: int = 20,
 ):
     memberships = session.exec(select(Memberships).offset(offset).limit(limit)).all()
     return memberships
+
+
+def db_get_membership_by_id(
+    session: SessionDep,
+    membership_id: str,
+):
+    membership = session.exec(
+        select(Memberships).where(Memberships.id == membership_id)
+    ).first()
+    return membership
+
+
+def db_create_membership(
+    session: SessionDep,
+    membership_data: dict,
+):
+    membership = Memberships.model_validate(membership_data)
+    session.add(membership)
+    session.commit()
+    session.refresh(membership)
+    return membership
+
+
+def db_update_membership(
+    session: SessionDep,
+    membership_id: int,
+    membership_data: dict,
+):
+    membership = session.get(Memberships, membership_id)
+    if not membership:
+        raise ErrNotFound
+
+    membership.sqlmodel_update(membership_data)
+    session.add(membership)
+    session.commit()
+    session.refresh(membership)
+
+    return membership
