@@ -26,6 +26,16 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v10.0.1
+        with:
+          enable-cache: true
+          cache-dependency-glob: 'uv.lock'
+          version: '0.12.8'
+
+      - name: Install Task
+        uses: arduino/setup-task@v2
+
       - name: Run tests
         run: |
           uv run pytest
