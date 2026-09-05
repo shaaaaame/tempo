@@ -11,7 +11,7 @@ from internal.services.memberships.v1.schemas import (
     UpdateMembershipRequest,
     CreateMembershipRequest,
 )
-from internal.repository.errors import NotFoundException
+from internal.repository.errors import NotFoundError
 
 membership_router = APIRouter(prefix="/v1")
 
@@ -57,7 +57,7 @@ async def update_membership(
 
     try:
         membership = db_update_membership(session, membership_id, membership_data)
-    except NotFoundException:
+    except NotFoundError as _:
         raise HTTPException(
             status.HTTP_404_NOT_FOUND, f"member with id: {membership_id} not found."
         )

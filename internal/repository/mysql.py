@@ -3,7 +3,7 @@ from sqlmodel import create_engine, Session, select
 from typing import Annotated, Sequence
 from fastapi import Depends
 from internal.repository.models import Memberships
-from internal.repository.errors import NotFoundException
+from internal.repository.errors import NotFoundError
 
 DB_PASSWORD = dotenv.get_key(".env", "DB_PASSWORD")
 CA_CERT_PATH = dotenv.get_key(".env", "CA_CERT_PATH")
@@ -59,7 +59,7 @@ def db_update_membership(
 ) -> Memberships:
     membership = session.get(Memberships, membership_id)
     if not membership:
-        raise NotFoundException
+        raise NotFoundError
 
     membership.sqlmodel_update(membership_data)
     session.add(membership)
@@ -77,7 +77,7 @@ def db_delete_membership(session: SessionDep, membership_id: str) -> bool:
     try:
         session.delete(membership)
         session.commit()
-    except Exception as e:
+    except Exception:
         return False
 
     return True
