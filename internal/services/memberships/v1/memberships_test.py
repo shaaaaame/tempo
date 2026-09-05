@@ -117,3 +117,163 @@ def test_get_membership_by_id_not_found(client: TestClient):
     response = client.get(f"/v1/memberships/{TEST_MEMBER_ID}")
 
     assert response.status_code == 404
+
+
+def test_post_membership_success(session: Session, client: TestClient):
+    payload = {
+        "id": TEST_MEMBER_ID,
+        "first_name": "first name",
+        "last_name": "last name",
+        "email": "firstname@gmail.com",
+        "skill_level": "white",
+        "type": "full",
+        "end_date": datetime.now().isoformat(),
+    }
+
+    response = client.post("/v1/memberships", json=payload)
+    data = response.json()
+
+    assert response.status_code == 200
+    assert data["id"] == TEST_MEMBER_ID
+    assert data["first_name"] == "first name"
+    assert data["last_name"] == "last name"
+    assert data["email"] == "firstname@gmail.com"
+    assert data["skill_level"] == "white"
+    assert data["type"] == "full"
+
+    membership = session.get(Memberships, TEST_MEMBER_ID)
+
+    assert membership is not None
+    assert membership.id == TEST_MEMBER_ID
+
+
+def test_post_membership_invalid_request(client: TestClient):
+    payload = {
+        "id": TEST_MEMBER_ID,
+        # Missing required fields
+    }
+
+    response = client.post("/v1/memberships", json=payload)
+
+    assert response.status_code == 422
+
+
+def test_update_membership_success(session: Session, client: TestClient):
+    test_member = Memberships(
+        id=TEST_MEMBER_ID,
+        first_name="first name",
+        last_name="last name",
+        email="firstname@gmail.com",
+        skill_level="white",
+        type="full",
+        end_date=datetime.now(),
+    )
+
+    session.add(test_member)
+    session.commit()
+
+    payload = {
+        "first_name": "updated first name",
+        "email": "updated@gmail.com",
+    }
+
+    response = client.patch(
+        f"/v1/memberships/{TEST_MEMBER_ID}",
+        json=payload,
+    )
+    data = response.json()
+
+    assert response.status_code == 200
+    assert data["id"] == TEST_MEMBER_ID
+    assert data["first_name"] == "updated first name"
+    assert data["email"] == "updated@gmail.com"
+
+
+def test_update_membership_not_found(client: TestClient):
+    payload = {
+        "first_name": "updated first name",
+    }
+
+    response = client.patch(
+        f"/v1/memberships/{TEST_MEMBER_ID}",
+        json=payload,
+    )
+
+    assert response.status_code == 404
+    assert response.json()["detail"] == (f"member with id: {TEST_MEMBER_ID} not found.")
+
+
+def test_update_membership_partial_update(
+    session: Session,
+    client: TestClient,
+):
+    test_member = Memberships(
+        id=TEST_MEMBER_ID,
+        first_name="first name",
+        last_name="last name",
+        email="firstname@gmail.com",
+        skill_level="white",
+        type="full",
+        end_date=datetime.now(),
+    )
+
+    session.add(test_member)
+    session.commit()
+
+    payload = {
+        "first_name": "updated first name",
+    }
+
+    response = client.patch(
+        f"/v1/memberships/{TEST_MEMBER_ID}",
+        json=payload,
+    )
+
+    assert response.status_code == 200
+
+    data = response.json()
+
+    assert data["first_name"] == "updated first name"
+    assert data["last_name"] == "last name"
+    assert data["email"] == "firstname@gmail.com"
+    assert data["skill_level"] == "white"
+    assert data["type"] == "full"
+
+
+def test_delete_membership_success(
+    session: Session,
+    client: TestClient,
+):
+    test_member = Memberships(
+        id=TEST_MEMBER_ID,
+        first_name="first name",
+        last_name="last name",
+        email="firstname@gmail.com",
+        skill_level="white",
+        type="full",
+        end_date=datetime.now(),
+    )
+
+    session.add(test_member)
+    session.commit()
+
+    response = client.delete(
+        f"/v1/memberships/{TEST_MEMBER_ID}",
+    )
+
+    assert response.status_code == 204
+    assert response.content == b""
+
+    membership = session.get(Memberships, TEST_MEMBER_ID)
+
+    assert membership is None
+
+
+def test_delete_membership_dne(
+    client: TestClient,
+):
+    response = client.delete(
+        f"/v1/memberships/{TEST_MEMBER_ID}",
+    )
+
+    assert response.status_code == 204

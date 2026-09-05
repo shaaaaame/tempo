@@ -1,1 +1,2 @@
-ErrNotFound = Exception("Not found")
+class NotFoundException(Exception):
+    pass
