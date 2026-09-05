@@ -49,18 +49,12 @@ class UpdateMembershipRequest(BaseModel):
 
     @model_validator(mode="after")
     def validate_contents(self):
-        valid_id = validate_membership_id(self.id)
-        if not valid_id:
-            raise ValueError(
-                "Invalid membership id format. Format should be {10-digit student number}:{school year, e.g 2627}"  # noqa
-            )
-
-        if self.skill_level not in SKILL_LEVELS:
+        if self.skill_level and self.skill_level not in SKILL_LEVELS:
             raise ValueError(
                 "Invalid skill level. Skill level should be white, red, purple or blue."
             )
 
-        if self.type not in MEMBERSHIP_TYPES:
+        if self.type and self.type not in MEMBERSHIP_TYPES:
             raise ValueError(
                 "Invalid membership type. Should be fall, winter, or full."
             )
@@ -72,7 +66,7 @@ def validate_membership_id(membership_id: str) -> bool:
     """
     Returns whether membership_id is valid
     """
-    if len(membership_id) != 14 or membership_id[10] != ":":
+    if len(membership_id) != 15 or membership_id[10] != ":":
         return False
 
     return True

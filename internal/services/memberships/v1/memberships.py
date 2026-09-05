@@ -1,16 +1,17 @@
-from fastapi import APIRouter, status, HTTPException
+from fastapi import APIRouter, status, HTTPException, Response
 from internal.repository.mysql import (
     SessionDep,
     db_get_memberships,
     db_create_membership,
     db_get_membership_by_id,
     db_update_membership,
+    db_delete_membership,
 )
 from internal.services.memberships.v1.schemas import (
     UpdateMembershipRequest,
     CreateMembershipRequest,
 )
-from internal.repository.errors import ErrNotFound
+from internal.repository.errors import NotFoundError
 
 membership_router = APIRouter(prefix="/v1")
 
@@ -56,7 +57,7 @@ async def update_membership(
 
     try:
         membership = db_update_membership(session, membership_id, membership_data)
-    except ErrNotFound:
+    except NotFoundError as _:
         raise HTTPException(
             status.HTTP_404_NOT_FOUND, f"member with id: {membership_id} not found."
         )
@@ -66,3 +67,15 @@ async def update_membership(
         )
 
     return membership
+
+
+@membership_router.delete("/memberships/{membership_id}", tags=["memberships"])
+async def delete_membership(session: SessionDep, membership_id: str):
+    success = db_delete_membership(session, membership_id)
+    if not success:
+        raise HTTPException(
+            status.HTTP_500_INTERNAL_SERVER_ERROR,
+            f"unable to delete member {membership_id}",
+        )
+
+    return Response(status_code=status.HTTP_204_NO_CONTENT)
